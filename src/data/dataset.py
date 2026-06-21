@@ -1,8 +1,10 @@
 import numpy as np
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import os
 import pandas as pd
+
+
 
 class StockDataset(Dataset):
   """ 
@@ -28,14 +30,14 @@ class StockDataset(Dataset):
     # how many past days the model looks at
     seq_len: int = 60,
     # how many future days to predict
-    forecast_horizon :int = 30,
+    forecast_horizon: int = 30,
     # column index of 'Close' price
     target_col: int = 3
     
   ):
     self.data = data
     self.seq_len= seq_len
-    self.forecast_horizon= forecast_horizon,
+    self.forecast_horizon= forecast_horizon
     self.target_col = target_col
     
     # Total sliding windows we can create from the data
@@ -76,7 +78,7 @@ class StockDataset(Dataset):
       torch.tensor(target_seq, dtype=torch.float32)
       )
     
-  def load_processed_data(data_dir: str = "data/processed", ticker: str= "AAPL") -> np.ndarray:
+def load_processed_data(data_dir: str = "data/processed", ticker: str= "AAPL") -> np.ndarray:
     """ 
     Load the processed CSV created in preprocess.py.
     Returns a raw numpy array — shape: (num_days, num_features)
@@ -89,7 +91,7 @@ class StockDataset(Dataset):
     # Convert to numpy - Dataset class works w arrays not DataFrames
     return df.values
   
-  def split_data(
+def split_data(
     data: np.ndarray,
     train_ratio: float = 0.7,
     val_ratio: float = 0.15
@@ -139,4 +141,65 @@ class StockDataset(Dataset):
     # Return the three datasets so they can be used
     # for model training, validation, and testing.
     return train_data, val_data, test_data
+  
+def create_dataloaders(
+    train_data: np.ndarray,
+    val_data: np.ndarray,
+    test_data: np.ndarray,
+    seq_len: int = 60,
+    forecast_horizon: int = 30,
+    batch_size: int = 32
+  ):
+    """
+    Wraps train/val/test arrays into StockDataset then DataLoader.
+
+    DataLoader handles:
+    - Batching:   groups samples into batches of batch_size
+    - Shuffling:  randomizes order each epoch (train only — never shuffle time series val/test)
+    - Parallel loading: speeds up data feeding to the model
+    """
+    
+    # Create dataset objects for each split
+    # StockDataset handles the sliding window logic internally
+    train_dataset = StockDataset(train_data, seq_len, forecast_horizon)
+    val_dataset = StockDataset(val_data, seq_len, forecast_horizon)
+    test_dataset = StockDataset(test_data, seq_len, forecast_horizon)
+    
+    # shuffle = True for training so the model doesn't memorize the order of batches
+    # shuffle = False for val/test - time order must be preserved for fair evaluations
+    train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle = True)
+    val_loader = DataLoader(val_dataset, batch_size = batch_size, shuffle = False)
+    test_loader = DataLoader(test_dataset, batch_size = batch_size, shuffle = False)
+    
+    print(f"Batches — Train: {len(train_loader)} | Val: {len(val_loader)} | Test: {len(test_loader)}")
+    return train_loader, val_loader, test_loader
+
+
+if __name__ == "__main__":
+  # loading the normalized data we created in preprocess.py
+  data = load_processed_data()
+  # splitting shronologically into train/ val / test
+  # no randomness here - time order matters
+  train_data, val_data, test_data = split_data(data)
+  # wrapping in DataLoaders for batched training
+  train_loader, val_loader, test_loader = create_dataloaders(
+    train_data, val_data, test_data,
+    # model looks back 60 days
+    seq_len=60, 
+    # model predicts next 30 days         
+    forecast_horizon=30, 
+    # 32 samples per gradient update
+    batch_size=32        
+    )
+  # printing shapes of one batch to verify everything is correct
+  inputs, targets = next(iter(train_loader))
+  print(f"\nSample batch:")
+  # expected output (32, 60, 16) → (batch, seq_len, features)  32 samples, 60 days lookback, 16 features
+  print(f"  Input shape:  {inputs.shape}") 
+  # expected output (32, 30) → (batch, forecast_horizon) 32 samples, 30 days forecast
+  print(f"  Target shape: {targets.shape}") 
+  
+    
+    
+
     
