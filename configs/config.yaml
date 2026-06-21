@@ -1,0 +1,44 @@
+# All hyperparameters and settings in one place.
+# Will change values here instead of touching model/training code.
+
+
+data:
+  ticker: "AAPL"                  # stock symbol to download
+  start_date: "2010-01-01"        # historical data start
+  raw_dir: "data/raw"             # where raw CSV is saved
+  processed_dir: "data/processed" # where processed CSV + scaler are saved
+  train_ratio: 0.70               # 70% of data for training
+  val_ratio: 0.15                 # 15% for validation
+  test_ratio: 0.15                # 15% for final evaluation
+
+sequence:
+  seq_len: 60                     # how many past days the model looks at
+  forecast_horizon: 30            # how many future days to predict
+  target_col: 3                   # column index of Close price (0=Open,1=High,2=Low,3=Close)
+
+training:
+  batch_size: 32                  # samples per gradient update
+  epochs: 50                      # number of full passes through training data
+  learning_rate: 0.001            # step size for optimizer (Adam)
+  patience: 10                    # early stopping — stop if val loss doesn't improve for 10 epochs
+  min_delta: 0.0001               # minimum improvement to count as progress
+  grad_clip: 1.0                  # gradient clipping to prevent exploding gradients
+
+lstm:
+  hidden_size: 128                # number of hidden units in each LSTM layer
+  num_layers: 2                   # number of stacked LSTM layers
+  dropout: 0.2                    # dropout rate to prevent overfitting
+  bidirectional: false            # if true, reads sequence forwards AND backwards
+
+transformer:
+  d_model: 64                     # embedding dimension (must be divisible by nhead)
+  nhead: 4                        # number of attention heads (d_model / nhead = 16)
+  num_encoder_layers: 3           # number of transformer encoder blocks
+  dim_feedforward: 256            # size of feedforward layer inside each block
+  dropout: 0.1                    # dropout rate
+  max_seq_len: 512                # maximum sequence length supported
+
+outputs:
+  model_dir: "outputs/models"     # where trained model weights are saved
+  plots_dir: "outputs/plots"      # where evaluation plots are saved
+  results_dir: "outputs/results"  # where metrics CSVs are saved
