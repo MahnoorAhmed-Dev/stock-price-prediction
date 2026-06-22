@@ -30,7 +30,7 @@ class PositionalEncoding(nn.Module):
     # lower dimensions = low frequency (captures global/ slow patterns)
     # Higher Dimensions = high frequency (captures local/fast patterns)
     div_term = torch.exp(
-      torch.arrange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)
+      torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)
       
     )
     # Even indices -> sine wave, Odd indices -> cosine waves
