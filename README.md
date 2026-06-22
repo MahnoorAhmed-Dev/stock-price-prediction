@@ -1,4 +1,4 @@
-# 📈 Stock Price Prediction — LSTM vs Transformer
+# Stock Price Prediction — LSTM vs Transformer
 
 Forecasting **AAPL stock prices 30 days into the future** using deep learning models trained on Yahoo Finance historical data (2010–2026).
 
@@ -8,7 +8,7 @@ Built as a final year portfolio project comparing two architectures:
 
 ---
 
-## 📊 Results
+## Results
 
 | Model | MAE | RMSE | MAPE | Best Val Loss | Epochs |
 |-------|-----|------|------|--------------|--------|
@@ -19,7 +19,7 @@ Built as a final year portfolio project comparing two architectures:
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 stock-price-prediction/
@@ -55,7 +55,7 @@ stock-price-prediction/
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 ### 1. Clone the repo
 ```bash
@@ -72,7 +72,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### Download data
 ```bash
@@ -105,7 +105,7 @@ python -m src.evaluation.visualize
 
 ---
 
-## 🧠 Models
+## Models
 
 ### LSTM
 - 2 stacked LSTM layers with hidden size 128
@@ -124,7 +124,7 @@ python -m src.evaluation.visualize
 
 ---
 
-## 📦 Features Used (16 total)
+## Features Used (16 total)
 
 | Category | Features |
 |----------|----------|
@@ -178,7 +178,7 @@ transformer:
 
 ---
 
-## 📈 Dataset Stats
+## Dataset Stats
 
 | Stat | Value |
 |------|-------|
@@ -195,7 +195,7 @@ transformer:
 
 ---
 
-## 🔍 Key Findings
+## Key Findings
 
 - **LSTM converged faster** (16 epochs vs 27) and achieved lower validation loss
 - **Transformer needs more data** — its advantage shows at scale (millions of samples)
@@ -205,7 +205,7 @@ transformer:
 
 ---
 
-## 🏗️ Built With
+## Built With
 
 - Python 3.12
 - PyTorch 2.3.0
