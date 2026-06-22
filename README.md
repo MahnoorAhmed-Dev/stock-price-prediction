@@ -2,7 +2,7 @@
 
 Forecasting **AAPL stock prices 30 days into the future** using deep learning models trained on Yahoo Finance historical data (2010–2026).
 
-Built as a final year portfolio project comparing two architectures:
+Built as a Deep Learning project comparing two architectures:
 - **LSTM** — sequential model that captures temporal dependencies
 - **Transformer** — attention-based model that learns long-range patterns
 
